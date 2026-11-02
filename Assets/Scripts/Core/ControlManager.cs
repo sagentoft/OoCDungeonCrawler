@@ -12,32 +12,49 @@ public class ControlManager
     
     private readonly PlayerCharacter player;
 
-    private int remainingMoves = 4;
+    private float controlTimer = 5;
 
     public ControlManager(PlayerCharacter player)
     {
         this.player = player;
     }
+    
+    public void Tick(float deltaTime)
+    {
+        controlTimer -= deltaTime;
 
-    public void SubmitMove(Vector2Int input, ControlSource source)
+        if (controlTimer <= 0f)
+        {
+            if (activeSource == ControlSource.AI)
+                player.AlignToGrid();
+            
+            SwitchSource();
+            controlTimer = 5f;
+        }
+
+    }
+
+    public void SubmitMove(Vector2 input, ControlSource source)
     {
         if (source != activeSource)
             return;
         
-        player.Move(input);
+        if (source == ControlSource.Human)
+            player.MoveOnGrid(Vector2Int.RoundToInt(input));
+        else
+            player.MoveFreely(input);
         
-        if (--remainingMoves <= 0)
-        {
-            remainingMoves = 4;
-            SwitchSource();
-        }
+        // if (--remainingMoves <= 0)
+        // {
+        //     remainingMoves = 4;
+        //     SwitchSource();
+        // }
     }
 
     private void SwitchSource()
     {
-        if (activeSource == ControlSource.AI)
-            activeSource = ControlSource.Human;
-        else
-            activeSource = ControlSource.AI;
+        Debug.Log("Switching source");
+        activeSource = activeSource == ControlSource.AI ?
+            ControlSource.Human : ControlSource.AI;
     }
 }

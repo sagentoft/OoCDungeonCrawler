@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,33 +6,30 @@ using UnityEngine.InputSystem;
 public class HumanController : MonoBehaviour
 {
     private ControlManager controlManager;
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private InputActions inputActions;
+
+    private void Awake()
     {
-        
+        inputActions = new InputActions();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
-        if (Keyboard.current.wKey.wasPressedThisFrame)
-        {
-            controlManager.SubmitMove(Vector2Int.up, ControlSource.Human);
-        }
+        inputActions.Player.Move.performed += Move_OnPerformed;
+        inputActions.Player.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputActions.Player.Move.performed -= Move_OnPerformed;
+        inputActions.Player.Disable();
+    }
+
+    private void Move_OnPerformed(InputAction.CallbackContext obj)
+    {
+        Vector2 input = obj.ReadValue<Vector2>();
         
-        if (Keyboard.current.sKey.wasPressedThisFrame)
-        {
-            controlManager.SubmitMove(Vector2Int.down, ControlSource.Human);
-        }
-        if (Keyboard.current.aKey.wasPressedThisFrame)
-        {
-            controlManager.SubmitMove(Vector2Int.left, ControlSource.Human);
-        }
-        if (Keyboard.current.dKey.wasPressedThisFrame)
-        {
-            controlManager.SubmitMove(Vector2Int.right, ControlSource.Human);
-        }
+        controlManager.SubmitMove(Vector2Int.RoundToInt(input), ControlSource.Human);
     }
 
     public void Initialize(ControlManager manager)

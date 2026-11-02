@@ -4,8 +4,8 @@ public class AIController : MonoBehaviour
 {
     private ControlManager controlManager;
 
-    private int moveCooldown = 1;
-    private float moveTimer;
+    private float directionChangeTimer = 2;
+    private Vector2 moveDirection;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -16,24 +16,19 @@ public class AIController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        moveTimer += Time.deltaTime;
-        
-        if (moveTimer >= moveCooldown)
+        directionChangeTimer -= Time.deltaTime;
+        if (directionChangeTimer <= 0)
         {
-            controlManager.SubmitMove(GenerateRandomMovementAction(), ControlSource.AI);
-            moveTimer = 0;
+            moveDirection = GenerateRandomDirection();
+            directionChangeTimer = 2;
         }
+        
+        controlManager.SubmitMove(moveDirection, ControlSource.AI);
     }
-    
-    private Vector2Int GenerateRandomMovementAction()
+
+    private Vector2 GenerateRandomDirection()
     {
-        return Random.Range(0,4) switch
-        {
-            0 => Vector2Int.up,
-            1 => Vector2Int.down,
-            2 => Vector2Int.left,
-            3 => Vector2Int.right,
-        };
+        return Random.insideUnitCircle.normalized;
     }
     
     public void Initialize(ControlManager manager)

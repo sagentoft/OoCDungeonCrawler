@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GameBootstrapper : MonoBehaviour
@@ -14,5 +15,10 @@ public class GameBootstrapper : MonoBehaviour
 
         humanController.Initialize(_controlManager);
         aiController.Initialize(_controlManager);
+    }
+
+    private void Update()
+    {
+        _controlManager.Tick(Time.deltaTime);
     }
 }
