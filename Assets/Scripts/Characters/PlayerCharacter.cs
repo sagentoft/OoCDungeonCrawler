@@ -20,23 +20,7 @@ public class PlayerCharacter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Keyboard.current.wKey.wasPressedThisFrame)
-        {
-            Move(Vector2Int.up);
-        }
-        
-        if (Keyboard.current.sKey.wasPressedThisFrame)
-        {
-            Move(Vector2Int.down);
-        }
-        if (Keyboard.current.aKey.wasPressedThisFrame)
-        {
-            Move(Vector2Int.left);
-        }
-        if (Keyboard.current.dKey.wasPressedThisFrame)
-        {
-            Move(Vector2Int.right);
-        }
+
     }
 
     public void Move(Vector2Int direction)
