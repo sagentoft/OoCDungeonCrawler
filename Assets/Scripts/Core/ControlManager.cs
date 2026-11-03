@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public enum ControlSource
@@ -13,6 +14,10 @@ public class ControlManager
     private readonly PlayerCharacter player;
 
     private float controlTimer = 5;
+    
+    public PlayerCharacter Player => player;
+    
+    public event Action<ControlSource> OnControlChanged;
 
     public ControlManager(PlayerCharacter player)
     {
@@ -44,11 +49,6 @@ public class ControlManager
         else
             player.MoveFreely(input);
         
-        // if (--remainingMoves <= 0)
-        // {
-        //     remainingMoves = 4;
-        //     SwitchSource();
-        // }
     }
 
     private void SwitchSource()
@@ -56,5 +56,7 @@ public class ControlManager
         Debug.Log("Switching source");
         activeSource = activeSource == ControlSource.AI ?
             ControlSource.Human : ControlSource.AI;
+        
+        OnControlChanged?.Invoke(activeSource);
     }
 }

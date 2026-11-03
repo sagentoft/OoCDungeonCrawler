@@ -13,10 +13,13 @@ public class PlayerCharacter : MonoBehaviour
 
     private Vector3Int currentCell;
     private Rigidbody2D rb;
+    
+    public PlayerPerception Perception { get; private set; }
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        Perception = GetComponent<PlayerPerception>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
