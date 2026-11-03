@@ -5,12 +5,6 @@ using Random = UnityEngine.Random;
 
 public class AIController : MonoBehaviour
 {
-    private enum AIState
-    {
-        Wander,
-        SeekTreasure
-    }
-    
     [SerializeField] private DungeonNavigation navigation;
     
     private ControlManager controlManager;
@@ -18,48 +12,38 @@ public class AIController : MonoBehaviour
     private float directionChangeTimer = 2;
     private float interactionRange = 1.5f;
     private Vector2 moveDirection;
-    private AIState aiState;
     
     private List<Vector3Int> currentPath;
     private int waypointIndex;
     private TreasureChest targetChest;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        aiState = AIState.Wander;
-    }
+    // The dungeon is static: do not repeatedly select targets whose paths failed.
+    private readonly HashSet<TreasureChest> unreachableChests = new();
 
     // Update is called once per frame
     void Update()
     {
+        if (controlManager == null)
+            return;
+
+        if (targetChest != null && !targetChest.isActiveAndEnabled)
+            ClearTarget();
 
         if (targetChest == null)
         {
-            targetChest = controlManager.Player.Perception.FindNearbyTreasure();
-            
-            if (targetChest != null)
-            {
-                if (aiState != AIState.SeekTreasure)
-                {
-                    currentPath = navigation.FindWorldPath(controlManager.Player.transform.position,
-                        targetChest.transform.position);
-                
-                    Debug.Log($"Found path with {currentPath.Count} cells");
-                }
-            
-                waypointIndex = 0;
-                aiState = AIState.SeekTreasure;
-            }
+            targetChest = controlManager.Player.Perception.FindNearbyTreasure(unreachableChests);
         }
 
+        if (controlManager.ActiveSource != ControlSource.AI)
+            return;
+        
+        if (targetChest != null && currentPath == null)
+            RecalculatePath();
+        
         if (targetChest != null)
         {
             FollowPath();
             return;
         }
-        
-        aiState = AIState.Wander;
         
         directionChangeTimer -= Time.deltaTime;
         if (directionChangeTimer <= 0)
@@ -73,9 +57,14 @@ public class AIController : MonoBehaviour
     
     private void HandleControlChanged(ControlSource source)
     {
-        if (source != ControlSource.AI || targetChest == null)
+        if (source != ControlSource.AI || targetChest == null || !targetChest.isActiveAndEnabled)
             return;
 
+        RecalculatePath();
+    }
+
+    private void RecalculatePath()
+    {
         currentPath = navigation.FindWorldPath(
             controlManager.Player.transform.position,
             targetChest.transform.position
@@ -91,27 +80,24 @@ public class AIController : MonoBehaviour
 
     private void FollowPath()
     {
+        Vector2 playerPosition = controlManager.Player.transform.position;
+        Vector2 chestPosition = targetChest.transform.position;
+        if ((chestPosition - playerPosition).sqrMagnitude <= interactionRange * interactionRange &&
+            navigation.HasLineOfSight(playerPosition, chestPosition))
+        {
+            controlManager.SubmitMove(Vector2.zero, ControlSource.AI);
+            targetChest.Open();
+            ClearTarget();
+            return;
+        }
+
         if (currentPath == null || waypointIndex >= currentPath.Count)
         {
             controlManager.SubmitMove(Vector2.zero, ControlSource.AI);
-
-            if (targetChest != null)
-            {
-                Vector2 toChest = targetChest.transform.position -
-                                    controlManager.Player.transform.position;
-
-                if (toChest.sqrMagnitude < interactionRange * interactionRange)
-                {
-                    targetChest.Open();
-                    targetChest = null;
-                    aiState = AIState.Wander;
-                }
-            }
-
+            unreachableChests.Add(targetChest);
+            ClearTarget();
             return;
         }
-        
-        Vector2 playerPosition = controlManager.Player.transform.position;
 
         for (int i = currentPath.Count - 1; i > waypointIndex; i--)
         {
@@ -143,6 +129,13 @@ public class AIController : MonoBehaviour
         );
     }
     
+    private void ClearTarget()
+    {
+        targetChest = null;
+        currentPath = null;
+        waypointIndex = 0;
+    }
+
     public void Initialize(ControlManager manager)
     {
         controlManager = manager;

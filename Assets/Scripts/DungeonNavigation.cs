@@ -34,6 +34,11 @@ public class DungeonNavigation : MonoBehaviour
         return FindPath(startCell, goalCell);
     }
     
+    public bool HasLineOfSight(Vector2 from, Vector2 to)
+    {
+        return Physics2D.Linecast(from, to, wallLayer).collider == null;
+    }
+
     public bool HasClearPath(Vector2 from, Vector2 to)
     {
         Vector2 displacement = to - from;

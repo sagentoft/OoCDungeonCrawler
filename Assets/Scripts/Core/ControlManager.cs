@@ -16,6 +16,7 @@ public class ControlManager
     private float controlTimer = 5;
     
     public PlayerCharacter Player => player;
+    public ControlSource ActiveSource => activeSource;
     
     public event Action<ControlSource> OnControlChanged;
 

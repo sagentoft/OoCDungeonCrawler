@@ -14,6 +14,8 @@ public class PlayerCharacter : MonoBehaviour
 
     private Vector3Int currentCell;
     private Rigidbody2D rb;
+    private Vector2 freeMoveDirection;
+    private bool freeMovementActive;
     
     public PlayerPerception Perception { get; private set; }
 
@@ -33,10 +35,16 @@ public class PlayerCharacter : MonoBehaviour
         transform.position = worldPosition;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
+        if (!freeMovementActive)
+            return;
 
+        rb.linearVelocity = Vector2.MoveTowards(
+            rb.linearVelocity,
+            freeMoveDirection * moveSpeed,
+            acceleration * Time.fixedDeltaTime
+        );
     }
 
     public void MoveOnGrid(Vector2Int direction)
@@ -56,17 +64,14 @@ public class PlayerCharacter : MonoBehaviour
 
     public void MoveFreely(Vector2 direction)
     {
-        Vector2 desiredVelocity = direction.normalized * moveSpeed;
-
-        rb.linearVelocity = Vector2.MoveTowards(
-            rb.linearVelocity,
-            desiredVelocity,
-            acceleration * Time.deltaTime
-        );
+        freeMoveDirection = direction.normalized;
+        freeMovementActive = true;
     }
     
     public void AlignToGrid()
     {
+        freeMovementActive = false;
+        freeMoveDirection = Vector2.zero;
         currentCell = grid.WorldToCell(transform.position);
         rb.position = grid.GetCellCenterWorld(currentCell);
         rb.linearVelocity = Vector2.zero;
