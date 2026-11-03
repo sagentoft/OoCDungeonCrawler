@@ -111,6 +111,19 @@ public class AIController : MonoBehaviour
             return;
         }
         
+        Vector2 playerPosition = controlManager.Player.transform.position;
+
+        for (int i = currentPath.Count - 1; i > waypointIndex; i--)
+        {
+            Vector2 candidate = navigation.GetWaypointPosition(currentPath[i]);
+
+            if (navigation.HasClearPath(playerPosition, candidate))
+            {
+                waypointIndex = i;
+                break;
+            }
+        }
+        
         Vector3 waypoint = navigation.GetWaypointPosition(currentPath[waypointIndex]);
         Vector2 toWaypoint = waypoint - controlManager.Player.transform.position;
 

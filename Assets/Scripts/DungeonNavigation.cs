@@ -7,6 +7,8 @@ public class DungeonNavigation : MonoBehaviour
 {
     [SerializeField] private Tilemap floorTilemap;
     [SerializeField] private Tilemap wallTilemap;
+    [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private BoxCollider2D playerCollider;
 
     private List<Vector3Int> testPath;
     private Grid grid;
@@ -30,6 +32,28 @@ public class DungeonNavigation : MonoBehaviour
         Vector3Int goalCell = grid.WorldToCell(goal);
         
         return FindPath(startCell, goalCell);
+    }
+    
+    public bool HasClearPath(Vector2 from, Vector2 to)
+    {
+        Vector2 displacement = to - from;
+        float distance = displacement.magnitude;
+
+        if (distance <= 0.001f)
+            return true;
+
+        Vector2 castSize = playerCollider.bounds.size * 1.05f;
+
+        RaycastHit2D hit = Physics2D.BoxCast(
+            from,
+            castSize,
+            0f,
+            displacement.normalized,
+            distance,
+            wallLayer
+        );
+
+        return hit.collider == null;
     }
     
     private List<Vector3Int> FindPath(Vector3Int start, Vector3Int goal)

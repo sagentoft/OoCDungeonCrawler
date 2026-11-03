@@ -254,8 +254,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   floorTilemap: {fileID: 1781197053}
   wallTilemap: {fileID: 728159762}
-  testStart: {fileID: 0}
-  testGoal: {fileID: 0}
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  playerCollider: {fileID: 2031586421}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -489,7 +491,7 @@ GameObject:
   - component: {fileID: 728159762}
   - component: {fileID: 728159761}
   - component: {fileID: 728159763}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3619,6 +3621,7 @@ MonoBehaviour:
   grid: {fileID: 302517700}
   floorTilemap: {fileID: 1781197053}
   wallsTilemap: {fileID: 728159762}
+  acceleration: 10
   moveSpeed: 3
 --- !u!61 &2031586421
 BoxCollider2D:
@@ -3664,7 +3667,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.75, y: 0.8}
   m_EdgeRadius: 0
 --- !u!50 &2031586422
 Rigidbody2D:

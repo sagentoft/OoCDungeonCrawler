@@ -9,6 +9,7 @@ public class PlayerCharacter : MonoBehaviour
     [SerializeField] private Tilemap floorTilemap;
     [SerializeField] private Tilemap wallsTilemap;
 
+    [SerializeField] private float acceleration = 20f;
     [SerializeField] private float moveSpeed = 10f;
 
     private Vector3Int currentCell;
@@ -55,7 +56,13 @@ public class PlayerCharacter : MonoBehaviour
 
     public void MoveFreely(Vector2 direction)
     {
-        rb.linearVelocity = direction * moveSpeed;
+        Vector2 desiredVelocity = direction.normalized * moveSpeed;
+
+        rb.linearVelocity = Vector2.MoveTowards(
+            rb.linearVelocity,
+            desiredVelocity,
+            acceleration * Time.deltaTime
+        );
     }
     
     public void AlignToGrid()
