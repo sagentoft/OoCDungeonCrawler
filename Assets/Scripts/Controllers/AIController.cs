@@ -119,7 +119,7 @@ public class AIController : MonoBehaviour
         Vector3 waypoint = navigation.GetWaypointPosition(currentPath[waypointIndex]);
         Vector2 toWaypoint = waypoint - controlManager.Player.transform.position;
 
-        if (toWaypoint.sqrMagnitude < 0.1f * 0.1f)
+        if (toWaypoint.sqrMagnitude < 0.01f * 0.01f)
         {
             waypointIndex++;
             controlManager.SubmitMove(Vector2.zero, ControlSource.AI);

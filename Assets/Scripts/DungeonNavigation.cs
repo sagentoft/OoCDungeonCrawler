@@ -47,7 +47,7 @@ public class DungeonNavigation : MonoBehaviour
         if (distance <= 0.001f)
             return true;
 
-        Vector2 castSize = playerCollider.bounds.size * 1.05f;
+        Vector2 castSize = playerCollider.bounds.size * 1.3f;
 
         RaycastHit2D hit = Physics2D.BoxCast(
             from,

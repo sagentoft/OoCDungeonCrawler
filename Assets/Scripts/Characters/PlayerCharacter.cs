@@ -11,7 +11,7 @@ public class PlayerCharacter : MonoBehaviour
     [SerializeField] private Tilemap wallsTilemap;
     [SerializeField] private PlayerAnimator playerAnimator;
 
-    [SerializeField] private float acceleration = 20f;
+    [SerializeField] private float acceleration = 50f;
     [SerializeField] private float moveSpeed = 10f;
 
     private Vector3Int currentCell;
@@ -45,11 +45,13 @@ public class PlayerCharacter : MonoBehaviour
         if (!freeMovementActive || isInterpolating)
             return;
 
-        rb.linearVelocity = Vector2.MoveTowards(
-            rb.linearVelocity,
-            freeMoveDirection * moveSpeed,
-            acceleration * Time.fixedDeltaTime
-        );
+        // rb.linearVelocity = Vector2.MoveTowards(
+        //     rb.linearVelocity,
+        //     freeMoveDirection * moveSpeed,
+        //     acceleration * Time.fixedDeltaTime
+        // );
+        
+        rb.linearVelocity = freeMoveDirection * moveSpeed;
     }
 
     private void OnCollisionEnter2D(Collision2D other)
