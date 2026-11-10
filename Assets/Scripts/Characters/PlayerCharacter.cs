@@ -19,6 +19,8 @@ public class PlayerCharacter : MonoBehaviour
     private Vector2 freeMoveDirection;
     private bool freeMovementActive;
     private bool isInterpolating;
+
+    public event Action OnWallCollision;
     
     public PlayerPerception Perception { get; private set; }
 
@@ -31,7 +33,7 @@ public class PlayerCharacter : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        currentCell = new Vector3Int(2, 3, 0);
+        currentCell = new Vector3Int(-5, -2, 0);
         
         Vector3 worldPosition = grid.GetCellCenterWorld(currentCell);
         
@@ -49,7 +51,15 @@ public class PlayerCharacter : MonoBehaviour
             acceleration * Time.fixedDeltaTime
         );
     }
-    
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Walls")) ;
+        {
+            OnWallCollision?.Invoke();
+        }
+    }
+
     private IEnumerator MoveToPosition(Vector2 targetPosition, float duration)
     {
         isInterpolating = true;

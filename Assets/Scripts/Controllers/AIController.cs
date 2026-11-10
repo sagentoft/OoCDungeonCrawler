@@ -15,9 +15,14 @@ public class AIController : MonoBehaviour
     
     private List<Vector3Int> currentPath;
     private int waypointIndex;
-    private TreasureChest targetChest;
+    [SerializeField] private TreasureChest targetChest;
     // The dungeon is static: do not repeatedly select targets whose paths failed.
     private readonly HashSet<TreasureChest> unreachableChests = new();
+    
+    private void OnEnable()
+    {
+        controlManager.OnWallCollision += () => moveDirection = -moveDirection;
+    }
 
     // Update is called once per frame
     void Update()
@@ -82,6 +87,7 @@ public class AIController : MonoBehaviour
     {
         Vector2 playerPosition = controlManager.Player.transform.position;
         Vector2 chestPosition = targetChest.transform.position;
+        
         if ((chestPosition - playerPosition).sqrMagnitude <= interactionRange * interactionRange &&
             navigation.HasLineOfSight(playerPosition, chestPosition))
         {

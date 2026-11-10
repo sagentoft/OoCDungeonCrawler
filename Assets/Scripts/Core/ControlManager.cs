@@ -9,20 +9,22 @@ public enum ControlSource
 
 public class ControlManager
 {
-    private ControlSource activeSource = ControlSource.Human;
+    private ControlSource activeSource = ControlSource.AI;
     
     private readonly PlayerCharacter player;
 
-    private float controlTimer = 5;
+    private float controlTimer = 99999;
     
     public PlayerCharacter Player => player;
     public ControlSource ActiveSource => activeSource;
     
     public event Action<ControlSource> OnControlChanged;
+    public event Action OnWallCollision;
 
     public ControlManager(PlayerCharacter player)
     {
         this.player = player;
+        player.OnWallCollision += () => OnWallCollision?.Invoke();
     }
     
     public void Tick(float deltaTime)
